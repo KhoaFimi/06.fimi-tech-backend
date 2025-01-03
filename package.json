@@ -1,0 +1,67 @@
+{
+	"name": "03.1.fimi-admin-backend",
+	"type": "module",
+	"scripts": {
+		"dev": "dotenv -e .env.development tsx watch src/index.ts",
+		"format": "prettier --config .prettierrc --write .",
+		"lint": "eslint .",
+		"lint-staged": "lint-staged",
+		"prepare": "husky",
+		"commitlint": "commitlint --edit",
+		"docker:dev": "docker compose --env-file ./.env.development -f docker-compose.dev.yml up -d",
+		"docker:build": "docker build -t fimi_admin_backend .",
+		"docker:dev:config": "docker compose --env-file ./.env.development -f docker-compose.dev.yml config",
+		"docker:dev:remove": "docker compose --env-file ./.env.development -f docker-compose.dev.yml down",
+		"prisma:migrate": "dotenv -e .env.development -- npx prisma migrate",
+		"prisma:push": "dotenv -e .env.development -- npx prisma db push",
+		"prisma:generate": "dotenv -e .env.development -- npx prisma generate",
+		"prisma:seed": "dotenv -e .env.development -- node prisma/seed"
+	},
+	"dependencies": {
+		"@hono/node-server": "1.13.7",
+		"@hono/swagger-ui": "0.5.0",
+		"@hono/zod-validator": "0.4.2",
+		"@prisma/client": "6.1.0",
+		"@types/nodemailer": "6.4.17",
+		"@types/otp-generator": "4.0.2",
+		"argon2": "0.41.1",
+		"bullmq": "5.34.6",
+		"googleapis": "144.0.0",
+		"hono": "4.6.15",
+		"hono-openapi": "0.3.1",
+		"ioredis": "5.4.2",
+		"nodemailer": "6.9.16",
+		"otp-generator": "4.0.1",
+		"zod": "3.24.1",
+		"zod-openapi": "4.2.2",
+		"zod-validation-error": "3.4.0"
+	},
+	"devDependencies": {
+		"@commitlint/cli": "19.6.0",
+		"@commitlint/config-conventional": "19.6.0",
+		"@eslint/js": "9.17.0",
+		"@types/node": "22.10.5",
+		"dotenv-cli": "8.0.0",
+		"eslint": "9.17.0",
+		"eslint-config-prettier": "9.1.0",
+		"eslint-plugin-import": "2.31.0",
+		"eslint-plugin-prettier": "5.2.1",
+		"eslint-plugin-simple-import-sort": "12.1.1",
+		"globals": "15.14.0",
+		"husky": "9.1.7",
+		"lint-staged": "15.3.0",
+		"prettier": "3.4.2",
+		"prisma": "6.1.0",
+		"ts-node": "10.9.2",
+		"tsx": "4.19.2",
+		"typescript": "5.7.2",
+		"typescript-eslint": "8.19.0"
+	},
+	"lint-staged": {
+		"*.ts": [
+			"npm run lint",
+			"npm run format",
+			"git add ."
+		]
+	}
+}

@@ -1,0 +1,128 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// #region:Enum
+enum GENDER {
+  MALE
+  FEMALE
+}
+
+// #endregion
+
+// #region:Publishers
+model Publisher {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  code          String        @unique @map("pub_code")
+  fullname      String
+  phone         String        @unique
+  email         String        @unique
+  emailVerified DateTime?     @map("email_verified")
+  level         Int           @default(0)
+  password      String        @unique
+  document      Docuemnt?
+  profile       Profile?
+  tnc           Boolean       @default(false)
+  platformId    String        @db.ObjectId
+  platform      Platform      @relation(fields: [platformId], references: [id])
+  managerId     String?       @db.ObjectId
+  manager       Publisher?    @relation("manage", fields: [managerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  manage        Publisher[]   @relation("manage")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  refreshToken  RefreshToken?
+
+  @@map("publishers")
+}
+
+type Profile {
+  dateOfBirth    String?  @map("date_of_birth")
+  placeOfBirth   String?  @map("place_of_birth")
+  gender         GENDER?
+  avatar         String?
+  workAt         String   @map("work_at")
+  currentAddress Address?
+  bank           Bank?
+}
+
+type Address {
+  detail   String
+  ward     String
+  district String
+  province String
+}
+
+type Bank {
+  accountName   String @map("account_name")
+  accountNumber String @map("account_number")
+  name          String
+}
+
+type Docuemnt {
+  citizenIdentification String   @map("citizen_identification")
+  dateOfIssue           DateTime @map("date_of_issue")
+  placeOfIssue          DateTime @map("place_of_issue")
+  imageFront            String?  @map("image_front")
+  imageBack             String?  @map("image_back")
+  potrait               String?
+  spec                  Json
+}
+
+// #endregion
+
+// #region: Platform
+model Platform {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  code       String      @unique
+  publsihers Publisher[]
+  prize      PricePolicy
+  apiKey     String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@map("platforms")
+}
+
+type PricePolicy {
+  origin Float  @default(0.95)
+  am     Float?
+  pub    Float?
+}
+
+// #endregion
+
+// #region: Tolken
+model VerificationToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  expires    DateTime
+  token      String   @unique
+
+  @@map("verfication_tokens")
+}
+
+model ResetPasswordToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  expires    DateTime
+  token      String   @unique
+
+  @@map("reset_password_tokens")
+}
+
+model RefreshToken {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  identifierId String    @unique @db.ObjectId
+  user         Publisher @relation(references: [id], fields: [identifierId], onDelete: Cascade)
+  expires      DateTime
+  token        String?   @unique
+
+  @@map("refresh_tokens")
+}
+
+// #endregion
