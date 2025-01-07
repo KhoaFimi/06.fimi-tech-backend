@@ -9,7 +9,7 @@ import { accessMiddleware } from '@/middlewares/access.middleware.js'
 import { getAllPublisherSchema } from '@/modules/publishers/schemas/get-all-publisher.schema.js'
 import { publishersService } from '@/modules/publishers/services/index.js'
 
-export const getAllPublisherPaginationController = hf.createHandlers(
+export const getAllPublisherController = hf.createHandlers(
 	describeRoute({
 		tags: ['Publishers'],
 		description:

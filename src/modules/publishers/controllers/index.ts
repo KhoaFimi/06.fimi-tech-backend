@@ -1,5 +1,5 @@
 import { forgotPasswordController } from '@/modules/publishers/controllers/forgot-password.controller.js'
-import { getAllPublisherPaginationController } from '@/modules/publishers/controllers/get-all-publisher.controller.js'
+import { getAllPublisherController } from '@/modules/publishers/controllers/get-all-publisher.controller.js'
 import { getNewOtpController } from '@/modules/publishers/controllers/get-new-otp.controller.js'
 import { loginController } from '@/modules/publishers/controllers/login.controller.js'
 import { newVerificationController } from '@/modules/publishers/controllers/new-verification.controller.js'
@@ -15,5 +15,5 @@ export const publisherController = {
 	refreshToken: refreshTokenController,
 	forgotPassword: forgotPasswordController,
 	resetPassword: resetPasswordController,
-	getAllPublisherPagination: getAllPublisherPaginationController
+	getAllPublisher: getAllPublisherController
 }
