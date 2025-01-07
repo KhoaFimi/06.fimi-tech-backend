@@ -8,7 +8,8 @@ import { SuccessResponse } from '@/lib/response.js'
 import { RegisterSchema } from '@/modules/publishers/schemas/register.schema.js'
 
 export const registerService = async (registerSchema: RegisterSchema) => {
-	const { fullname, email, password, phone, tnc, platformCode } = registerSchema
+	const { fullname, email, password, phone, tnc, platformCode, ref } =
+		registerSchema
 
 	if (!tnc)
 		throw new HTTPException(400, {
@@ -61,12 +62,46 @@ export const registerService = async (registerSchema: RegisterSchema) => {
 
 	const hashedPassword = await argon2.hash(password)
 
+	let managerId: string | null = null
+
+	if (ref) {
+		const existingPublisher = await db.publisher.findUnique({
+			where: {
+				code: ref
+			}
+		})
+
+		if (!existingPublisher)
+			throw new HTTPException(404, {
+				message: 'Không tìm thấy manager',
+				res: new Response('Not Found', {
+					headers: {
+						statusCode: ErrorCode.NOT_FOUND_ERROR
+					}
+				})
+			})
+
+		if (existingPublisher.level < 1) {
+			await db.publisher.update({
+				where: {
+					id: existingPublisher.id
+				},
+				data: {
+					level: 1
+				}
+			})
+		}
+
+		managerId = existingPublisher.id
+	}
+
 	const newPublisher = await db.publisher.create({
 		data: {
 			fullname,
 			email,
 			phone,
 			tnc,
+			managerId,
 			code: `${platformCode}${phone.substring(1)}`,
 			password: hashedPassword,
 			platformId: existingPlatform.id

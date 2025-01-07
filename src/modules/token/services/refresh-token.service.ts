@@ -1,3 +1,4 @@
+import argon2 from 'argon2'
 import { HTTPException } from 'hono/http-exception'
 import { sign, verify } from 'hono/jwt'
 import { JWTPayload } from 'hono/utils/jwt/types'
@@ -31,20 +32,22 @@ export const refreshToken = {
 				'RS256'
 			)
 
+			const hashedToken = await argon2.hash(signRefreshToken)
+
 			const expires = new Date(
 				new Date().getTime() + parseInt(env.REFRESH_TOKEN_EXPIRES) * 1000
 			)
 
-			const newRefreshToken = await db.refreshToken.create({
+			await db.refreshToken.create({
 				data: {
 					identifierId: userId,
-					token: signRefreshToken,
+					token: hashedToken,
 					expires
 				}
 			})
 
 			return new SuccessResponse(SuccessCode.OK, {
-				refreshToken: newRefreshToken.token
+				refreshToken: signRefreshToken
 			})
 		}
 
@@ -59,28 +62,30 @@ export const refreshToken = {
 				'RS256'
 			)
 
+			const hashedToken = await argon2.hash(signRefreshToken)
+
 			const expires = new Date(
 				new Date().getTime() + parseInt(env.REFRESH_TOKEN_EXPIRES) * 1000
 			)
 
-			const updatedToken = await db.refreshToken.update({
+			await db.refreshToken.update({
 				where: {
 					id: existingToken.id
 				},
 				data: {
-					token: signRefreshToken,
+					token: hashedToken,
 					expires
 				}
 			})
 
 			return new SuccessResponse(SuccessCode.OK, {
-				refreshToken: updatedToken.token
+				refreshToken: signRefreshToken
 			})
 		}
 
-		return new SuccessResponse(SuccessCode.OK, {
-			refreshToken: existingToken.token
-		})
+		// return new SuccessResponse(SuccessCode.OK, {
+		// 	refreshToken: existingToken.token
+		// })
 	},
 	refresh: async (token: string) => {
 		const decodedToken = (await verify(
@@ -116,13 +121,24 @@ export const refreshToken = {
 
 		if (hasExpires) {
 			throw new HTTPException(400, {
-				message: 'OTP đã hết hạn',
+				message: 'Refresh token hết hạn',
 				res: new Response('Bad Request', {
 					status: 400,
-					statusText: ErrorCode.OTP_EXPIRES_ERROR
+					statusText: ErrorCode.UNAUTHORIZED_ERROR
 				})
 			})
 		}
+
+		const verifyToken = await argon2.verify(existingToken.token, token)
+
+		if (!verifyToken)
+			throw new HTTPException(400, {
+				message: 'Refresh token không chính xác',
+				res: new Response('Bad Request', {
+					status: 400,
+					statusText: ErrorCode.UNAUTHORIZED_ERROR
+				})
+			})
 
 		const {
 			data: { accessToken }
@@ -131,11 +147,9 @@ export const refreshToken = {
 			level: existingToken.user.level
 		})
 
-		const currentRefreshToken = existingToken.token
-
 		return new SuccessResponse(SuccessCode.OK, {
 			accessToken,
-			refreshToken: currentRefreshToken
+			refreshToken: token
 		})
 	}
 }

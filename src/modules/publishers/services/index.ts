@@ -1,4 +1,5 @@
 import { forgotPasswordService } from '@/modules/publishers/services/forgot-password.service.js'
+import { getAllPublisherService } from '@/modules/publishers/services/get-all-publisher.service.js'
 import { getNewOtpService } from '@/modules/publishers/services/get-new-otp.service.js'
 import { loginService } from '@/modules/publishers/services/login.service.js'
 import { newVerificationService } from '@/modules/publishers/services/new-verification.service.js'
@@ -11,5 +12,6 @@ export const publishersService = {
 	newVerification: newVerificationService,
 	getNewOtp: getNewOtpService,
 	forgotPassword: forgotPasswordService,
-	resetPassword: resetPasswordService
+	resetPassword: resetPasswordService,
+	getAllPublisher: getAllPublisherService
 }

@@ -13,6 +13,7 @@ export const registerSchema = z.object({
 		.refine(phone => /^\d+$/.test(phone), {
 			message: 'Số điện thoại không đúng định dạng'
 		}),
+	ref: z.string().optional().nullish(),
 	password: z
 		.string()
 		.min(8, { message: 'Mật khẩu phải có tối thiểu 8 ký tự' })
