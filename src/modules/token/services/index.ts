@@ -1,11 +1,11 @@
-import { accessToken } from '@/modules/token/services/access-token.service.js'
-import { refreshToken } from '@/modules/token/services/refresh-token.service.js'
-import { resetPasswordToken } from '@/modules/token/services/reset-password-token.service.js'
-import { verificationToken } from '@/modules/token/services/verification-token.service.js'
+import { accessTokenService } from '@/modules/token/services/access-token/index.js'
+import { refreshTokenService } from '@/modules/token/services/refresh-token/index.js'
+import { resetPasswordTokenService } from '@/modules/token/services/reset-password-token/index.js'
+import { verificationTokenService } from '@/modules/token/services/verification-token/index.js'
 
 export const tokenService = {
-	verificationToken,
-	resetPasswordToken,
-	accessToken,
-	refreshToken
+	verificationToken: verificationTokenService,
+	resetPasswordToken: resetPasswordTokenService,
+	accessToken: accessTokenService,
+	refreshToken: refreshTokenService
 }
