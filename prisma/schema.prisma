@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["omitApi"]
 }
 
 datasource db {
@@ -34,6 +35,7 @@ model Publisher {
   manager       Publisher?    @relation("manage", fields: [managerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   manage        Publisher[]   @relation("manage")
   createdAt     DateTime      @default(now())
+  isDelete      Boolean       @default(false)
   updatedAt     DateTime      @updatedAt
   refreshToken  RefreshToken?
 
@@ -82,6 +84,7 @@ model Platform {
   publsihers Publisher[]
   prize      PricePolicy
   apiKey     String
+  isDelete   Boolean     @default(false)
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 
