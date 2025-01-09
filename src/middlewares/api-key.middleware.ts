@@ -48,5 +48,7 @@ export const apiKeyMiddleware = hf.createMiddleware(async (c, next) => {
 			})
 		})
 
+	c.set('partnerCode', partnerCode)
+
 	await next()
 })

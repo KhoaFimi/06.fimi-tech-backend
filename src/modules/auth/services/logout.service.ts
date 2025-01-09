@@ -5,7 +5,7 @@ import { db } from '@/lib/db.js'
 
 export const logoutService = async (id: string) => {
 	const [existingPublisher, existingRefreshToken] = await db.$transaction([
-		db.publisher.findUnique({ where: { id } }),
+		db.user.findUnique({ where: { id } }),
 		db.refreshToken.findUnique({ where: { identifierId: id } })
 	])
 

@@ -1,4 +1,5 @@
 import { forgotPasswordController } from '@/modules/auth/controllers/forgot-password.controller.js'
+import { getAuthController } from '@/modules/auth/controllers/get-auth.controller.js'
 import { getNewOTPController } from '@/modules/auth/controllers/get-new-otp.controller.js'
 import { loginController } from '@/modules/auth/controllers/login.controller.js'
 import { logoutController } from '@/modules/auth/controllers/logout.controller.js'
@@ -15,5 +16,6 @@ export const authController = {
 	forgotPassword: forgotPasswordController,
 	resetPassword: resetPasswordController,
 	getNewOtp: getNewOTPController,
-	refreshToken: refreshTokenController
+	refreshToken: refreshTokenController,
+	getAuth: getAuthController
 }

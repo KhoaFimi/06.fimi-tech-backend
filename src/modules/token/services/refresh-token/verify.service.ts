@@ -1,19 +1,21 @@
+import argon2 from 'argon2'
 import { HTTPException } from 'hono/http-exception'
 import { verify } from 'hono/jwt'
 import { JwtTokenExpired } from 'hono/utils/jwt/types'
 
 import { ErrorCode } from '@/constraints/code.constraint.js'
-import { accessTokenPublicKey } from '@/constraints/jwt.constraint.js'
+import { refreshTokenPublicKey } from '@/constraints/jwt.constraint.js'
 import { db } from '@/lib/db.js'
-import { IAccessTokenPayload } from '@/modules/token/types.js'
+import { authService } from '@/modules/auth/services/index.js'
+import { IRefreshTokenPayload } from '@/modules/token/types.js'
 
-export const verifyAccessTokenService = async (token: string) => {
+export const verifyRefreshTokenService = async (token: string) => {
 	try {
 		const decoded = (await verify(
 			token,
-			accessTokenPublicKey,
+			refreshTokenPublicKey,
 			'RS256'
-		)) as IAccessTokenPayload
+		)) as IRefreshTokenPayload
 
 		const existingUser = await db.user.findUnique({
 			where: {
@@ -21,10 +23,10 @@ export const verifyAccessTokenService = async (token: string) => {
 			},
 			omit: { password: true },
 			include: {
-				platform: {
+				refreshToken: {
 					select: {
-						id: true,
-						code: true
+						expires: true,
+						token: true
 					}
 				}
 			}
@@ -32,13 +34,31 @@ export const verifyAccessTokenService = async (token: string) => {
 
 		if (!existingUser)
 			throw new HTTPException(404, {
-				message: 'Access token không chính xác',
+				message: 'Refresh token không chính xác',
 				res: new Response('Not Found', {
 					headers: {
 						statusCode: ErrorCode.WRONG_CREDENTIALS_ERROR
 					}
 				})
 			})
+
+		const verifyToken = await argon2.verify(
+			existingUser.refreshToken.token,
+			token
+		)
+
+		if (!verifyToken) {
+			await authService.logout(existingUser.id)
+
+			throw new HTTPException(401, {
+				message: 'Refresh token không chính xác, đã đăng ',
+				res: new Response('Unauthorized', {
+					headers: {
+						statusCode: ErrorCode.UNAUTHORIZED_ERROR
+					}
+				})
+			})
+		}
 
 		return {
 			user: existingUser,
@@ -47,7 +67,7 @@ export const verifyAccessTokenService = async (token: string) => {
 	} catch (error) {
 		if (error instanceof JwtTokenExpired) {
 			throw new HTTPException(409, {
-				message: 'Access Token hết hạn',
+				message: 'Refresh Token hết hạn',
 				res: new Response('Unauthorized', {
 					headers: {
 						statusCode: ErrorCode.ACCESS_TOKEN_EXPIRED_ERROR

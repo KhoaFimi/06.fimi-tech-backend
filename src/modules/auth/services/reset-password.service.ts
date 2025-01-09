@@ -11,7 +11,7 @@ export const resetPasswordService = async (values: ResetPasswordSchema) => {
 
 	const hashedPassword = await argon2.hash(password)
 
-	return await db.publisher.update({
+	return await db.user.update({
 		where: {
 			id: res.identifier
 		},

@@ -10,7 +10,7 @@ import { tokenService } from '@/modules/token/services/index.js'
 export const loginService = async (values: LoginSchema) => {
 	const { email, password } = values
 
-	const existingUser = await db.publisher.findUnique({
+	const existingUser = await db.user.findUnique({
 		where: {
 			email: email
 		}

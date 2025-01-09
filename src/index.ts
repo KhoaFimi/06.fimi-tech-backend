@@ -8,6 +8,7 @@ import { swaggerConfig } from '@/configs/swgger.config.js'
 import { env } from '@/lib/env.js'
 import { apiKeyMiddleware } from '@/middlewares/api-key.middleware.js'
 import { authRoutes } from '@/modules/auth/routes.js'
+import { usersRoutes } from '@/modules/users/routes.js'
 import { sendForgotPasswordWorker } from '@/workers/send-forgot-pasword.worker.js'
 import { sendVerificationWorker } from '@/workers/send-verification.worker.js'
 
@@ -22,6 +23,7 @@ export const appRouter = app
 	.basePath(env.API_PREFIX)
 	.use(apiKeyMiddleware)
 	.route('/auth', authRoutes)
+	.route('/users', usersRoutes)
 
 app.get('/docs', apiDocsConfig(appRouter))
 

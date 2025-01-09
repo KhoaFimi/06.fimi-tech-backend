@@ -27,8 +27,7 @@ export const registerSchema = z.object({
 		.refine(password => /[0-9]/.test(password), {
 			message: 'Mật khẩu phải có 1 chữ số'
 		}),
-	tnc: z.boolean().default(false),
-	platformCode: z.string()
+	tnc: z.boolean().default(false)
 })
 
 export type RegisterSchema = z.infer<typeof registerSchema>

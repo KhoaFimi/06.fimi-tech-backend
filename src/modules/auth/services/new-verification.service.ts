@@ -7,7 +7,7 @@ export const newVerificationService = async (values: NewVerificationSchema) => {
 
 	const res = await tokenService.verificationToken.verify(otp, verificationKey)
 
-	await db.publisher.update({
+	await db.user.update({
 		where: {
 			id: res.identifier
 		},

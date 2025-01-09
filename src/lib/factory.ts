@@ -1,10 +1,9 @@
 import { createFactory } from 'hono/factory'
 
-import { AuthPublisher } from '@/types/env.type.js'
-
 type Env = {
 	Variables: {
-		authPublisher: AuthPublisher
+		authUserId: string
+		partnerCode: string
 	}
 }
 

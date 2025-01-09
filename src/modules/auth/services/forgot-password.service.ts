@@ -6,7 +6,7 @@ import { sendForgotPasswordMailQueue } from '@/lib/queue.js'
 import { ForgotPasswordSchema } from '@/modules/auth/schemas/forgot-password.schema.js'
 
 export const forgotPasswordService = async (values: ForgotPasswordSchema) => {
-	const existingUser = await db.publisher.findUnique({
+	const existingUser = await db.user.findUnique({
 		where: {
 			email: values.email
 		}

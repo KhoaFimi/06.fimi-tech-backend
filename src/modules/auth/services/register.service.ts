@@ -6,9 +6,11 @@ import { db } from '@/lib/db.js'
 import { sendVerificationMailQueue } from '@/lib/queue.js'
 import { RegisterSchema } from '@/modules/auth/schemas/register.schema.js'
 
-export const registerService = async (registerSchema: RegisterSchema) => {
-	const { fullname, email, password, phone, tnc, platformCode, ref } =
-		registerSchema
+export const registerService = async (
+	registerSchema: RegisterSchema,
+	partnerCode: string
+) => {
+	const { fullname, email, password, phone, tnc, ref } = registerSchema
 
 	if (!tnc)
 		throw new HTTPException(400, {
@@ -21,7 +23,7 @@ export const registerService = async (registerSchema: RegisterSchema) => {
 			})
 		})
 
-	if (!platformCode)
+	if (!partnerCode)
 		throw new HTTPException(400, {
 			message: 'Yêu cầu mã Partner ',
 			res: new Response('Bad Request', {
@@ -33,8 +35,8 @@ export const registerService = async (registerSchema: RegisterSchema) => {
 		})
 
 	const [existingPublisher, existingPlatform] = await db.$transaction([
-		db.publisher.findFirst({ where: { OR: [{ email }, { phone }] } }),
-		db.platform.findUnique({ where: { code: platformCode } })
+		db.user.findFirst({ where: { OR: [{ email }, { phone }] } }),
+		db.platform.findUnique({ where: { code: partnerCode } })
 	])
 
 	if (existingPublisher)
@@ -64,7 +66,7 @@ export const registerService = async (registerSchema: RegisterSchema) => {
 	let managerId: string | null = null
 
 	if (ref) {
-		const existingPublisher = await db.publisher.findUnique({
+		const existingPublisher = await db.user.findUnique({
 			where: {
 				code: ref
 			}
@@ -81,7 +83,7 @@ export const registerService = async (registerSchema: RegisterSchema) => {
 			})
 
 		if (existingPublisher.level < 1) {
-			await db.publisher.update({
+			await db.user.update({
 				where: {
 					id: existingPublisher.id
 				},
@@ -94,14 +96,14 @@ export const registerService = async (registerSchema: RegisterSchema) => {
 		managerId = existingPublisher.id
 	}
 
-	const newPublisher = await db.publisher.create({
+	const newPublisher = await db.user.create({
 		data: {
 			fullname,
 			email,
 			phone,
 			tnc,
 			managerId,
-			code: `${platformCode}${phone.substring(1)}`,
+			code: `${partnerCode}${phone.substring(1)}`,
 			password: hashedPassword,
 			platformId: existingPlatform.id
 		}

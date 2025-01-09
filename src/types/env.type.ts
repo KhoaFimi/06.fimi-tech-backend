@@ -2,6 +2,9 @@ import { Prisma } from '@prisma/client'
 import type { JWTPayload } from 'hono/utils/jwt/types'
 
 export type AuthPublisher = Prisma.PublisherGetPayload<{
+	omit: {
+		password: true
+	}
 	include: {
 		platform: {
 			select: {

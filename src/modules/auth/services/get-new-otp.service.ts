@@ -4,7 +4,7 @@ import { db } from '@/lib/db.js'
 import { sendVerificationMailQueue } from '@/lib/queue.js'
 
 export const getNewOtpService = async (verificationKey: string) => {
-	const existingUser = await db.publisher.findUnique({
+	const existingUser = await db.user.findUnique({
 		where: { id: verificationKey }
 	})
 

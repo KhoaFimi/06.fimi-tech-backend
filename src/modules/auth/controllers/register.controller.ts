@@ -35,8 +35,9 @@ export const registerController = hf.createHandlers(
 	}),
 	async c => {
 		const validatedData = c.req.valid('json')
+		const partnerCode = c.get('partnerCode')
 
-		const res = await authService.register(validatedData)
+		const res = await authService.register(validatedData, partnerCode)
 
 		return c.json(
 			new SuccessResponse({

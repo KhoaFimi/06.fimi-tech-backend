@@ -32,7 +32,7 @@ export const accessMiddleware = (level: number = 0) => {
 				})
 			})
 
-		c.set('authPublisher', res.user)
+		c.set('authUserId', res.user.id)
 
 		await next()
 	})

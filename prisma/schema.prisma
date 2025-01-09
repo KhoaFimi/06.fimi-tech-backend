@@ -16,8 +16,8 @@ enum GENDER {
 
 // #endregion
 
-// #region:Publishers
-model Publisher {
+// #region:User
+model User {
   id            String        @id @default(auto()) @map("_id") @db.ObjectId
   code          String        @unique @map("pub_code")
   fullname      String
@@ -32,14 +32,14 @@ model Publisher {
   platformId    String        @db.ObjectId
   platform      Platform      @relation(fields: [platformId], references: [id])
   managerId     String?       @db.ObjectId
-  manager       Publisher?    @relation("manage", fields: [managerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  manage        Publisher[]   @relation("manage")
+  manager       User?         @relation("manage", fields: [managerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  manage        User[]        @relation("manage")
   createdAt     DateTime      @default(now())
   isDelete      Boolean       @default(false)
   updatedAt     DateTime      @updatedAt
   refreshToken  RefreshToken?
 
-  @@map("publishers")
+  @@map("user")
 }
 
 type Profile {
@@ -81,7 +81,7 @@ type Docuemnt {
 model Platform {
   id         String      @id @default(auto()) @map("_id") @db.ObjectId
   code       String      @unique
-  publsihers Publisher[]
+  publsihers User[]
   prize      PricePolicy
   apiKey     String
   isDelete   Boolean     @default(false)
@@ -119,13 +119,99 @@ model ResetPasswordToken {
 }
 
 model RefreshToken {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
-  identifierId String    @unique @db.ObjectId
-  user         Publisher @relation(references: [id], fields: [identifierId], onDelete: Cascade)
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifierId String   @unique @db.ObjectId
+  user         User     @relation(references: [id], fields: [identifierId], onDelete: Cascade)
   expires      DateTime
-  token        String?   @unique
+  token        String?  @unique
 
   @@map("refresh_tokens")
+}
+
+// #endregion
+
+// #region: Campaign & Category
+enum CampaignLinkType {
+  NORMAL
+  EXTEND
+}
+
+type CampaignLink {
+  type CampaignLinkType
+  base String
+}
+
+type CampaignOffer {
+  title   String
+  summary String
+  offer   String[]
+}
+
+type CampaignAgeRequirement {
+  min Int
+  max Int?
+}
+
+type CampaignRequirement {
+  age       CampaignAgeRequirement
+  documents String[]
+}
+
+type CampaignInfo {
+  supportArea     String[]
+  approveTime     String
+  finalResultTime String
+}
+
+type CampaignSpec {
+  title       String
+  description String[]
+}
+
+type CampaignCommissionPolicy {
+  status      String
+  description String[]
+  commissions String[]
+  note        String?
+}
+
+type CampaignRecognitionRules {
+  summary     String
+  description String[]
+  note        String?
+}
+
+model Campaign {
+  id                  String                   @id @default(auto()) @map("_id") @db.ObjectId
+  code                String
+  name                String
+  advertiser          String
+  link                CampaignLink
+  categoryId          String                   @db.ObjectId
+  category            Category                 @relation(fields: [categoryId], references: [id])
+  image               String
+  campaignOffers      CampaignOffer[]
+  info                CampaignInfo
+  specs               CampaignSpec[]
+  commissionPolicy    CampaignCommissionPolicy
+  recognitionRules    CampaignRecognitionRules
+  registrationProcess String[]
+  rejectReason        String[]
+  unqualifiedRecords  String[]
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+
+  @@map("campaigns")
+}
+
+model Category {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  name      String     @unique
+  campaigns Campaign[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@map("categories")
 }
 
 // #endregion
