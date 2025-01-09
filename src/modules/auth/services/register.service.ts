@@ -34,7 +34,7 @@ export const registerService = async (registerSchema: RegisterSchema) => {
 
 	const [existingPublisher, existingPlatform] = await db.$transaction([
 		db.publisher.findFirst({ where: { OR: [{ email }, { phone }] } }),
-		db.publisher.findUnique({ where: { code: platformCode } })
+		db.platform.findUnique({ where: { code: platformCode } })
 	])
 
 	if (existingPublisher)
