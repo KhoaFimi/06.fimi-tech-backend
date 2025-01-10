@@ -2,6 +2,6 @@ import { generateResetPasswordToken } from '@/modules/token/services/reset-passw
 import { verifyResetPasswordToken } from '@/modules/token/services/reset-password-token/verify.service.js'
 
 export const resetPasswordTokenService = {
-	genetate: generateResetPasswordToken,
+	generate: generateResetPasswordToken,
 	verify: verifyResetPasswordToken
 }
