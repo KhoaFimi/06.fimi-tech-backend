@@ -14,7 +14,21 @@ const main = async () => {
 		}
 	})
 
-	console.log({ seedPlatform })
+	const sheetCategory = await prisma.category.createMany({
+		data: [
+			{
+				name: 'Thẻ tín dụng'
+			},
+			{
+				name: 'Tài khoản thanh toán'
+			},
+			{
+				name: 'Vay tín chấp'
+			}
+		]
+	})
+
+	console.log({ seedPlatform, sheetCategory })
 }
 
 main()

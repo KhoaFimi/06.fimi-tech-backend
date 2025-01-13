@@ -170,7 +170,7 @@ type CampaignSpec {
 
 type CampaignCommissionPolicy {
   status      String
-  description String[]
+  description String
   commissions String[]
   note        String?
 }
@@ -189,7 +189,8 @@ model Campaign {
   link                CampaignLink
   categoryId          String                   @db.ObjectId
   category            Category                 @relation(fields: [categoryId], references: [id])
-  image               String
+  images              String[]
+  video               String?
   campaignOffers      CampaignOffer[]
   info                CampaignInfo
   specs               CampaignSpec[]
