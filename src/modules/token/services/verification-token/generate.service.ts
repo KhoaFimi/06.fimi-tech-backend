@@ -20,7 +20,7 @@ export const generateVerificationToken = async (identifier: string) => {
 
 	const token = await argon2.hash(otp)
 
-	const expires = new Date(new Date().getTime() + 3600 * 1000)
+	const expires = new Date(new Date().getTime() + 600 * 1000)
 
 	await db.verificationToken.create({
 		data: {
